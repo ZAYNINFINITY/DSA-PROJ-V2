@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🏥 Hospital Patient Queue System</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+      header {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      h1 {
+        color: #667eea;
+        font-size: 2.2em;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .subtitle {
+        color: #666;
+        font-size: 1.1em;
+      }
+      .status-indicator {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 5px;
+      }
+      .status-connected {
+        background: #48bb78;
+      }
+      .status-disconnected {
+        background: #f56565;
+      }
+      .main-grid {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 25px;
+        margin-bottom: 30px;
+      }
+      .control-panel {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15),
+          0 0 20px rgba(102, 126, 234, 0.1);
+        height: fit-content;
+      }
+      .control-panel h2 {
+        color: #667eea;
+        margin-bottom: 20px;
+        font-size: 1.4em;
+        font-weight: 500;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+        font-weight: 600;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+      }
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: #a78bfa;
+        box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+      }
+      .btn {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-bottom: 10px;
+      }
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .btn-primary {
+        background: #667eea;
+        color: white;
+      }
+      .btn-primary:hover:not(:disabled) {
+        background: #5568d3;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+      .btn-success {
+        background: #48bb78;
+        color: white;
+      }
+      .btn-success:hover:not(:disabled) {
+        background: #38a169;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+      }
+      .btn-warning {
+        background: #ed8936;
+        color: white;
+      }
+      .btn-warning:hover:not(:disabled) {
+        background: #dd6b20;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(237, 137, 54, 0.4);
+      }
+      .btn-danger {
+        background: #f56565;
+        color: white;
+      }
+      .btn-info {
+        background: #4299e1;
+        color: white;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-top: 20px;
+      }
+      .stat-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 50px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        transition: transform 0.3s;
+      }
+      .stat-box:hover {
+        transform: translateY(-3px);
+      }
+      .stat-number {
+        font-size: 2em;
+        font-weight: bold;
+        display: block;
+      }
+      .stat-label {
+        font-size: 0.9em;
+        opacity: 0.9;
+      }
+      .queue-area {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15),
+          0 0 20px rgba(102, 126, 234, 0.1);
+        min-height: 500px;
+      }
+      .queue-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+      .search-container {
+        margin-bottom: 15px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .search-input {
+        flex: 1;
+        padding: 10px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: border-color 0.3s;
+      }
+      .search-input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+      .queue-header h2 {
+        color: #667eea;
+        font-size: 1.6em;
+        font-weight: 500;
+      }
+      .counter-area {
+        background: linear-gradient(135deg, #f8bbd9 0%, #ec407a 100%);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+        min-height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        box-shadow: 0 8px 25px rgba(248, 187, 217, 0.3);
+      }
+      .counter-label {
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2em;
+      }
+      .patients-container {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        padding: 20px;
+        background: #f7fafc;
+        border-radius: 10px;
+        min-height: 200px;
+      }
+      .patient-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        min-width: 150px;
+        text-align: center;
+        transition: all 0.3s;
+        animation: slideIn 0.5s ease-out;
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      .patient-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+      .patient-avatar {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 15px;
+        position: relative;
+      }
+      .priority-ring {
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        right: -5px;
+        bottom: -5px;
+        border-radius: 50%;
+        border: 4px solid;
+      }
+      .priority-1 {
+        border-color: #f56565;
+      }
+      .priority-2 {
+        border-color: #ed8936;
+      }
+      .priority-3 {
+        border-color: #48bb78;
+      }
+      .stickman {
+        width: 100%;
+        height: 100%;
+      }
+      .patient-name {
+        font-weight: bold;
+        color: #2d3748;
+        margin-bottom: 5px;
+        font-size: 1.1em;
+      }
+      .patient-details {
+        color: #718096;
+        font-size: 0.9em;
+      }
+      .priority-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8em;
+        font-weight: bold;
+        margin-top: 8px;
+        color: white;
+      }
+      .priority-badge-1 {
+        background: #f56565;
+      }
+      .priority-badge-2 {
+        background: #ed8936;
+      }
+      .priority-badge-3 {
+        background: #48bb78;
+      }
+      .empty-queue {
+        text-align: center;
+        color: #a0aec0;
+        padding: 60px 20px;
+        font-size: 1.2em;
+        width: 100%;
+      }
+      .served-section {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15),
+          0 0 20px rgba(102, 126, 234, 0.1);
+        margin-top: 25px;
+      }
+      .served-section h2 {
+        color: #667eea;
+        margin-bottom: 20px;
+        font-size: 1.4em;
+        font-weight: 500;
+      }
+      .served-list {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+      .served-item {
+        padding: 12px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .served-item .remove-btn {
+        background: #f56565;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 4px 8px;
+        font-size: 0.8em;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.3s;
+      }
+      .served-item .remove-btn:hover {
+        opacity: 1;
+      }
+      .served-item .patient-id {
+        font-size: 0.8em;
+        color: #718096;
+        margin-left: 8px;
+      }
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        display: none;
+        animation: slideInRight 0.3s ease-out;
+        z-index: 1000;
+      }
+      @keyframes slideInRight {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      .toast.show {
+        display: block;
+      }
+      .toast.success {
+        border-left: 5px solid #48bb78;
+      }
+      .toast.error {
+        border-left: 5px solid #f56565;
+      }
+      .loading {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes walk {
+        0%,
+        100% {
+          transform: translateX(0) rotate(0deg);
+        }
+        25% {
+          transform: translateX(-3px) rotate(-2deg);
+        }
+        50% {
+          transform: translateX(0) rotate(0deg);
+        }
+        75% {
+          transform: translateX(3px) rotate(2deg);
+        }
+      }
+      .walking-stickman {
+        animation: walk 0.8s ease-in-out infinite;
+      }
+      .served-item > div:last-child {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 5px;
+      }
+      @media (max-width: 768px) {
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
+        h1 {
+          font-size: 1.8em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header>
+        <h1>🏥 Hospital Patient Queue System</h1>
+        <p class="subtitle">
+          <span class="status-indicator status-connected"></span>
+          <span>Connected to Backend</span>
+        </p>
+      </header>
+
+      <div class="main-grid">
+        <!-- Control Panel -->
+        <div class="control-panel">
+          <h2>📋 Control Panel</h2>
+
+          <div class="form-group">
+            <label>Patient Name</label>
+            <input type="text" id="patientName" placeholder="Enter full name" />
+          </div>
+
+          <div class="form-group">
+            <label>Age</label>
+            <input
+              type="number"
+              id="patientAge"
+              min="1"
+              max="150"
+              placeholder="Enter age"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Priority Level</label>
+            <select id="patientPriority">
+              <option value="1">🔴 High (Critical)</option>
+              <option value="2">🟠 Medium (Urgent)</option>
+              <option value="3">🟢 Low (Regular)</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary" onclick="addPatient()" id="addBtn">
+            ➕ Add Patient
+          </button>
+
+          <button
+            class="btn btn-success"
+            onclick="servePatient()"
+            id="serveBtn"
+          >
+            ✅ Serve Next
+          </button>
+
+          <button class="btn btn-warning" onclick="sortQueue()" id="sortBtn">
+            🔃 Sort
+          </button>
+
+          <button class="btn btn-info" onclick="exportData()">💾 Export</button>
+
+          <button class="btn btn-danger" onclick="clearQueue()">
+            🗑️ Clear
+          </button>
+
+          <!-- Stats -->
+          <div class="stats">
+            <div class="stat-box">
+              <div class="stat-number" id="queueCount">0</div>
+              <div class="stat-label">In Queue</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="servedCount">0</div>
+              <div class="stat-label">Served</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Queue Area -->
+        <div class="queue-area">
+          <div class="queue-header">
+            <h2>👥 Current Queue</h2>
+          </div>
+
+          <!-- Search Container -->
+          <div class="search-container">
+            <input
+              type="text"
+              id="queueSearch"
+              class="search-input"
+              placeholder="Search by name..."
+            />
+          </div>
+
+          <!-- Serving Counter -->
+          <div class="counter-area">
+            <div class="counter-label">🏥 Serving Counter</div>
+            <div id="servingPatient"></div>
+          </div>
+
+          <!-- Patients Container -->
+          <div id="queueDisplay" class="patients-container">
+            <div class="empty-queue">
+              <div style="font-size: 3em; margin-bottom: 20px">📋</div>
+              <div>No patients in queue</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Served Section -->
+      <div class="served-section">
+        <h2>✅ Recently Served Patients</h2>
+        <div id="servedList" class="served-list">
+          <p style="text-align: center; color: #a0aec0; padding: 40px 20px">
+            No patients served yet
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast">
+      <div style="display: flex; align-items: center">
+        <div style="flex-shrink: 0">
+          <span id="toastIcon">✅</span>
+        </div>
+        <div style="margin-left: 12px">
+          <p
+            id="toastMessage"
+            style="margin: 0; font-size: 14px; font-weight: 500; color: #2d3748"
+          ></p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API = "/api";
+      let queue = [];
+      let servedPatients = [];
+
+      // Draw stickman function
+      function drawStickman(p) {
+        const colors = { 1: "#ef4444", 2: "#f97316", 3: "#22c55e" };
+        const color = colors[p];
+        return `<svg class="w-20 h-20" viewBox="0 0 100 140">
+                <circle cx="50" cy="25" r="18" fill="none" stroke="${color}" stroke-width="3"/>
+                <circle cx="50" cy="25" r="12" fill="${color}" opacity="0.3"/>
+                <circle cx="50" cy="25" r="12" fill="none" stroke="${color}" stroke-width="2"/>
+                <line x1="50" y1="37" x2="50" y2="80" stroke="${color}" stroke-width="3"/>
+                <line x1="50" y1="50" x2="30" y2="65" stroke="${color}" stroke-width="2.5"/>
+                <line x1="50" y1="50" x2="70" y2="65" stroke="${color}" stroke-width="2.5"/>
+                <line x1="50" y1="80" x2="35" y2="110" stroke="${color}" stroke-width="2.5"/>
+                <line x1="50" y1="80" x2="65" y2="110" stroke="${color}" stroke-width="2.5"/>
+            </svg>`;
+      }
+
+      // Render queue
+      function renderQueue() {
+        const container = document.getElementById("queueDisplay");
+        const searchTerm = document
+          .getElementById("queueSearch")
+          .value.toLowerCase();
+
+        let filteredQueue = queue;
+        if (searchTerm) {
+          filteredQueue = queue.filter((p) =>
+            p.name.toLowerCase().includes(searchTerm)
+          );
+        }
+
+        if (!filteredQueue.length) {
+          container.innerHTML =
+            '<div class="empty-queue"><div style="font-size: 3em; margin-bottom: 20px;">📋</div><div>No patients in queue</div></div>';
+          document.getElementById("queueCount").textContent = queue.length;
+          return;
+        }
+
+        container.innerHTML = filteredQueue
+          .map(
+            (p) => `
+                <div class="patient-card">
+                    <div class="patient-avatar">
+                        <div class="walking-stickman">
+                            ${drawStickman(p.priority)}
+                        </div>
+                    </div>
+                    <div class="patient-name">${p.name}</div>
+                    <div class="patient-details">Age: ${p.age}</div>
+                    <span class="priority-badge priority-badge-${p.priority}">
+                        ${
+                          p.priority === 1
+                            ? "High"
+                            : p.priority === 2
+                            ? "Medium"
+                            : "Low"
+                        }
+                    </span>
+                </div>
+            `
+          )
+          .join("");
+        document.getElementById("queueCount").textContent = queue.length;
+      }
+
+      // Render served list
+      function renderServedList() {
+        const container = document.getElementById("servedList");
+        if (!servedPatients.length) {
+          container.innerHTML =
+            '<p style="text-align: center; color: #a0aec0; padding: 40px 20px;">No patients served yet</p>';
+          document.getElementById("servedCount").textContent = "0";
+          return;
+        }
+
+        container.innerHTML = servedPatients
+          .slice()
+          .reverse()
+          .map(
+            (p) => `
+                <div class="served-item">
+                    <div>
+                        <strong>${p.name}</strong>
+                        <span>(Age: ${p.age})</span>
+                        <span class="patient-id">#${p.id || "N/A"}</span>
+                    </div>
+                    <div>
+                        <span class="priority-badge priority-badge-${
+                          p.priority
+                        }">
+                            ${
+                              p.priority === 1
+                                ? "High"
+                                : p.priority === 2
+                                ? "Medium"
+                                : "Low"
+                            }
+                        </span>
+                        ${
+                          p.id
+                            ? `<button class="remove-btn" onclick="removeServed(${p.id})">Remove</button>`
+                            : ""
+                        }
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+        document.getElementById("servedCount").textContent =
+          servedPatients.length;
+      }
+
+      // Toast notification
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
+        const toastIcon = document.getElementById("toastIcon");
+
+        toastMessage.textContent = message;
+        toastIcon.textContent = type === "success" ? "✅" : "❌";
+
+        toast.classList.remove("opacity-0", "translate-x-full");
+        toast.classList.add("opacity-100", "translate-x-0");
+
+        setTimeout(() => {
+          toast.classList.remove("opacity-100", "translate-x-0");
+          toast.classList.add("opacity-0", "translate-x-full");
+        }, 3000);
+      }
+
+      // Loading state
+      function setLoading(buttonId, loading) {
+        const btn = document.getElementById(buttonId);
+        btn.disabled = loading;
+        if (loading) {
+          btn.innerHTML =
+            '<div class="loading w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto"></div>';
+        } else {
+          btn.innerHTML = btn.textContent;
+          loadQueue();
+        }
+      }
+
+      // Load queue data
+      async function loadQueue() {
+        try {
+          const response = await fetch(`${API}/queue`);
+          const data = await response.json();
+          queue = data.queue || [];
+          servedPatients = data.served || [];
+          renderQueue();
+          renderServedList();
+        } catch (e) {
+          console.error("Error loading queue:", e);
+        }
+      }
+
+      // Add patient
+      async function addPatient() {
+        const name = document.getElementById("patientName").value.trim();
+        const age = parseInt(document.getElementById("patientAge").value);
+        const priority = parseInt(
+          document.getElementById("patientPriority").value
+        );
+
+        if (!name) {
+          showToast("❌ Please enter patient name", "error");
+          return;
+        }
+        if (!age || age < 1 || age > 150) {
+          showToast("❌ Please enter valid age (1-150)", "error");
+          return;
+        }
+
+        setLoading("addBtn", true);
+        try {
+          const response = await fetch(`${API}/add`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, age, priority }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            document.getElementById("patientName").value = "";
+            document.getElementById("patientAge").value = "";
+            showToast(`✅ Patient "${name}" added successfully`);
+            loadQueue(); // Immediate update
+          } else {
+            showToast(`❌ Error: ${data.error}`, "error");
+          }
+        } catch (e) {
+          showToast("❌ Failed to add patient", "error");
+        } finally {
+          setLoading("addBtn", false);
+        }
+      }
+
+      // Serve patient
+      async function servePatient() {
+        if (!queue.length) {
+          showToast("❌ Queue is empty!", "error");
+          return;
+        }
+
+        setLoading("serveBtn", true);
+        try {
+          const patient = queue[0];
+          const response = await fetch(`${API}/serve`, { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            const servingArea = document.getElementById("servingPatient");
+            servingArea.innerHTML = `
+                        <div class="bg-white rounded-xl p-6 shadow-lg">
+                            <div class="flex justify-center mb-4">
+                                ${drawStickman(patient.priority)}
+                            </div>
+                            <div class="text-center">
+                                <div class="font-bold text-gray-800 text-lg mb-2">${
+                                  patient.name
+                                }</div>
+                                <div class="text-gray-600">Age: ${
+                                  patient.age
+                                }</div>
+                            </div>
+                        </div>
+                    `;
+            setTimeout(() => (servingArea.innerHTML = ""), 3000);
+            showToast(`✅ Serving "${patient.name}"`);
+          } else {
+            showToast(`❌ ${data.error}`, "error");
+          }
+        } catch (e) {
+          showToast("❌ Failed to serve patient", "error");
+        } finally {
+          setLoading("serveBtn", false);
+        }
+      }
+
+      // Sort queue
+      async function sortQueue() {
+        if (!queue.length) {
+          showToast("❌ Queue is empty!", "error");
+          return;
+        }
+
+        setLoading("sortBtn", true);
+        try {
+          const response = await fetch(`${API}/sort`, { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            showToast("✅ Queue sorted by priority");
+          } else {
+            showToast(`❌ ${data.error}`, "error");
+          }
+        } catch (e) {
+          showToast("❌ Failed to sort queue", "error");
+        } finally {
+          setLoading("sortBtn", false);
+        }
+      }
+
+      // Export data
+      async function exportData() {
+        try {
+          const response = await fetch(`${API}/export`);
+          const data = await response.json();
+          const blob = new Blob([JSON.stringify(data, null, 2)], {
+            type: "application/json",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `queue_${Date.now()}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+          showToast("✅ Data exported successfully");
+        } catch (e) {
+          showToast("❌ Export failed", "error");
+        }
+      }
+
+      // Clear queue
+      async function clearQueue() {
+        if (!queue.length) {
+          showToast("❌ Queue already empty!", "error");
+          return;
+        }
+        if (!confirm(`Clear all ${queue.length} patients?`)) return;
+
+        try {
+          const response = await fetch(`${API}/clear`, { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            showToast("✅ Queue cleared successfully");
+          } else {
+            showToast(`❌ ${data.error}`, "error");
+          }
+        } catch (e) {
+          showToast("❌ Failed to clear queue", "error");
+        }
+      }
+
+      // Remove served patient
+      async function removeServed(id) {
+        if (!confirm(`Remove patient #${id} from served list?`)) return;
+
+        try {
+          const response = await fetch(`${API}/remove_served`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            showToast(`✅ Patient #${id} removed successfully`);
+          } else {
+            showToast(`❌ ${data.error}`, "error");
+          }
+        } catch (e) {
+          showToast("❌ Failed to remove patient", "error");
+        }
+      }
+
+      // Auto-refresh every 2 seconds
+      setInterval(loadQueue, 2000);
+      loadQueue();
+
+      // Add event listener for search input
+      document
+        .getElementById("queueSearch")
+        .addEventListener("input", renderQueue);
+    </script>
+  </body>
+</html>

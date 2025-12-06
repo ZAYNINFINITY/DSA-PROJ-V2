@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom animations and styles */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes walk {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-3px) rotate(-2deg);
+  }
+  50% {
+    transform: translateX(0) rotate(0deg);
+  }
+  75% {
+    transform: translateX(3px) rotate(2deg);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.walking-stickman {
+  animation: walk 0.8s ease-in-out infinite;
+}
+
+.patient-card {
+  animation: slideIn 0.5s ease-out;
+}
+
+.toast.show {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.loading {
+  animation: spin 0.8s linear infinite;
+}
+
+/* Priority colors */
+.priority-1 {
+  @apply border-red-500;
+}
+.priority-2 {
+  @apply border-orange-500;
+}
+.priority-3 {
+  @apply border-green-500;
+}
+
+.priority-badge-1 {
+  @apply bg-red-500;
+}
+.priority-badge-2 {
+  @apply bg-orange-500;
+}
+.priority-badge-3 {
+  @apply bg-green-500;
+}
