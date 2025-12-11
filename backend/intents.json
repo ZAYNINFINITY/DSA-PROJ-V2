@@ -1,0 +1,196 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "hello",
+        "hi",
+        "hey",
+        "good morning",
+        "good afternoon",
+        "good evening",
+        "greetings",
+        "hi there",
+        "hello there"
+      ],
+      "responses": [
+        "Hello! How can I help you with the hospital queue today?",
+        "Hi there! I'm here to help with queue information.",
+        "Hello! Ask me about the patient queue or hospital information.",
+        "Hi! I can help you check the queue status, find patient information, and answer questions about the hospital."
+      ]
+    },
+    {
+      "tag": "queue_status",
+      "patterns": [
+        "how many patients",
+        "queue length",
+        "patients in queue",
+        "how many in queue",
+        "queue count",
+        "number of patients",
+        "how many waiting",
+        "patients waiting",
+        "queue size",
+        "how many people in queue",
+        "total patients",
+        "patient count"
+      ],
+      "responses": [
+        "There are {queue_count} patients currently in the queue.",
+        "The queue currently has {queue_count} patient(s) waiting.",
+        "I can see {queue_count} patient(s) in the queue right now."
+      ]
+    },
+    {
+      "tag": "next_patient",
+      "patterns": [
+        "who is next",
+        "next patient",
+        "who's next",
+        "next in line",
+        "who will be served",
+        "next to serve",
+        "who is first",
+        "first patient",
+        "next in queue",
+        "upcoming patient"
+      ],
+      "responses": [
+        "The next patient to be served is {next_patient_info}.",
+        "According to priority, the next patient is {next_patient_info}.",
+        "{next_patient_info} will be served next."
+      ]
+    },
+    {
+      "tag": "queue_empty",
+      "patterns": [
+        "is queue empty",
+        "anyone waiting",
+        "patients waiting",
+        "is there a queue",
+        "any patients",
+        "queue empty",
+        "no patients",
+        "empty queue"
+      ],
+      "responses": ["{queue_status_message}"]
+    },
+    {
+      "tag": "patient_info",
+      "patterns": [
+        "patient details",
+        "tell me about patient",
+        "patient information",
+        "who is patient",
+        "patient name",
+        "find patient",
+        "search patient",
+        "patient status",
+        "info about patient",
+        "patient data"
+      ],
+      "responses": ["{patient_info_response}"]
+    },
+    {
+      "tag": "priority_info",
+      "patterns": [
+        "what is priority",
+        "priority levels",
+        "how does priority work",
+        "priority system",
+        "priority meaning",
+        "explain priority",
+        "what are priorities",
+        "priority explanation",
+        "how priority works"
+      ],
+      "responses": [
+        "Priority levels: 1 = High/Critical (served first), 2 = Medium/Urgent, 3 = Low/Regular. Within same priority, older patients are served first, then by registration order (ID).",
+        "The hospital uses 3 priority levels: Priority 1 (High/Critical) is served first, Priority 2 (Medium/Urgent) next, and Priority 3 (Low/Regular) last. When priorities are equal, older patients and earlier registrations are prioritized.",
+        "Priority system: 1=High (critical cases), 2=Medium (urgent), 3=Low (regular). Patients are sorted by priority first, then age (older first), then ID (earlier registration first)."
+      ]
+    },
+    {
+      "tag": "hospital_hours",
+      "patterns": [
+        "hospital hours",
+        "opening hours",
+        "when is hospital open",
+        "hospital schedule",
+        "visiting hours",
+        "hospital timing",
+        "what time is hospital open",
+        "hospital operating hours"
+      ],
+      "responses": [
+        "The hospital is open 24/7 for emergency services. Regular appointments are available Monday-Friday 8 AM - 6 PM, Saturday 9 AM - 2 PM.",
+        "Emergency services are available 24/7. For regular appointments: Monday-Friday 8:00 AM to 6:00 PM, Saturday 9:00 AM to 2:00 PM. Closed on Sundays except emergencies.",
+        "Our hospital operates 24/7 for emergencies. Regular consultation hours: Weekdays 8 AM - 6 PM, Saturday 9 AM - 2 PM."
+      ]
+    },
+    {
+      "tag": "hospital_location",
+      "patterns": [
+        "where is hospital",
+        "hospital address",
+        "hospital location",
+        "hospital address",
+        "where are you located",
+        "directions to hospital"
+      ],
+      "responses": [
+        "The hospital is located at 123 Medical Center Drive, Healthcare City. For directions, please contact our reception at (555) 123-4567.",
+        "Our address is 123 Medical Center Drive, Healthcare City. You can reach us at (555) 123-4567 for directions.",
+        "The hospital is situated at 123 Medical Center Drive, Healthcare City. Call (555) 123-4567 for detailed directions."
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "bye",
+        "goodbye",
+        "see you",
+        "thanks",
+        "thank you",
+        "exit",
+        "that's all",
+        "done",
+        "no more questions"
+      ],
+      "responses": [
+        "You're welcome! Feel free to ask if you need more information.",
+        "Goodbye! Take care and stay healthy.",
+        "Thank you for using the hospital queue system! Have a great day!",
+        "You're welcome! If you have more questions, just ask."
+      ]
+    },
+    {
+      "tag": "help",
+      "patterns": [
+        "help",
+        "what can you do",
+        "what do you know",
+        "capabilities",
+        "what can you help with",
+        "how can you help",
+        "what questions can I ask",
+        "what do you do"
+      ],
+      "responses": [
+        "I can help you with:\n- Queue status and patient count\n- Next patient information\n- Patient details and search\n- Priority system explanation\n- Hospital information (hours, location)\n\nJust ask me anything about the queue or hospital!",
+        "I'm your hospital queue assistant! I can:\n✓ Check how many patients are waiting\n✓ Tell you who's next in line\n✓ Find patient information\n✓ Explain the priority system\n✓ Answer questions about hospital hours and location\n\nWhat would you like to know?",
+        "I can assist with:\n• Current queue status\n• Next patient details\n• Patient search and information\n• Priority level explanations\n• General hospital information\n\nAsk me anything!"
+      ]
+    },
+    {
+      "tag": "unknown",
+      "patterns": [],
+      "responses": [
+        "I'm not sure I understand. Could you rephrase your question? I can help with queue status, patient information, or hospital details.",
+        "I didn't quite catch that. Try asking about the queue, next patient, or hospital information.",
+        "I'm here to help with queue and patient information. Could you ask your question differently?"
+      ]
+    }
+  ]
+}

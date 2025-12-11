@@ -35,7 +35,7 @@ void Queue::loadPatient(int id, string name, int age, int priority) {
 }
 
 // Remove the highest-priority patient
-// Priority rule:
+// Priority rule: priority ASC → age DESC → id ASC
 //   1) lower priority number = more important
 //   2) if equal priority → older age first
 //   3) if same age → smaller ID first
@@ -43,23 +43,25 @@ Patient Queue::dequeue() {
     if (patients.empty()) {
         Patient empty;
         empty.id = -1;
+        empty.name = "";
+        empty.age = 0;
+        empty.priority = 0;
         return empty;
     }
 
-    int bestIndex = 0;
+    size_t bestIndex = 0;
 
-    for (int i = 1; i < patients.size(); i++) {
-
-        // Priority check
+    for (size_t i = 1; i < patients.size(); i++) {
+        // Priority check (lower number = higher priority)
         if (patients[i].priority < patients[bestIndex].priority) {
             bestIndex = i;
         }
-        // Same priority → older age first
+        // Same priority → older age first (age DESC)
         else if (patients[i].priority == patients[bestIndex].priority &&
                  patients[i].age > patients[bestIndex].age) {
             bestIndex = i;
         }
-        // Same age → smaller ID
+        // Same priority and age → smaller ID first (id ASC)
         else if (patients[i].priority == patients[bestIndex].priority &&
                  patients[i].age == patients[bestIndex].age &&
                  patients[i].id < patients[bestIndex].id) {
@@ -73,28 +75,21 @@ Patient Queue::dequeue() {
     return p;
 }
 
-// Sort function (simple and readable)
+// Sort function - optimized with std::sort
+// Sort order: priority ASC → age DESC → id ASC
 void Queue::sortByPriority() {
-    // Simple bubble sort for readability
-    for (size_t i = 0; i < patients.size(); ++i) {
-        for (size_t j = i + 1; j < patients.size(); ++j) {
-            bool should_swap = false;
-            if (patients[i].priority > patients[j].priority) {
-                should_swap = true;
-            } else if (patients[i].priority == patients[j].priority) {
-                if (patients[i].age < patients[j].age) {
-                    should_swap = true;
-                } else if (patients[i].age == patients[j].age && patients[i].id > patients[j].id) {
-                    should_swap = true;
-                }
-            }
-            if (should_swap) {
-                Patient temp = patients[i];
-                patients[i] = patients[j];
-                patients[j] = temp;
-            }
+    std::sort(patients.begin(), patients.end(), [](const Patient& a, const Patient& b) {
+        // First: priority (lower number = higher priority)
+        if (a.priority != b.priority) {
+            return a.priority < b.priority;
         }
-    }
+        // Second: age (older = higher priority, so DESC)
+        if (a.age != b.age) {
+            return a.age > b.age;
+        }
+        // Third: id (lower id = higher priority, so ASC)
+        return a.id < b.id;
+    });
 }
 
 // Show queue
@@ -120,5 +115,5 @@ bool Queue::isEmpty() {
 
 // Return size
 int Queue::size() {
-    return patients.size();
+    return static_cast<int>(patients.size());
 }

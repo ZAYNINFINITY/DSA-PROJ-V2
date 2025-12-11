@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🏥 Hospital Patient Queue System</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- API Configuration -->
+    <script src="config.js"></script>
+    <!-- Chatbot -->
+    <script src="chatbot.js"></script>
+    <style>
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      .modal-content {
+        background-color: #fefefe;
+        margin: 10% auto;
+        padding: 0;
+        border: 1px solid #888;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+      .modal-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 10px 10px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .modal-header h2 {
+        margin: 0;
+        font-size: 1.3em;
+      }
+      .modal-close {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s;
+      }
+      .modal-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+      .modal-body {
+        padding: 20px;
+      }
+      .modal-body small {
+        display: block;
+        color: #666;
+        margin-top: 5px;
+        font-size: 0.85em;
+      }
+      .btn-primary, .btn-info {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        margin-right: 10px;
+        margin-top: 10px;
+      }
+      .btn-primary {
+        background: #667eea;
+        color: white;
+      }
+      .btn-info {
+        background: #4299e1;
+        color: white;
+      }
+      .btn-primary:hover, .btn-info:hover {
+        opacity: 0.9;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🏥 Hospital Patient Queue System</h1>
+        <div class="status-indicator" id="statusIndicator">
+          <span id="statusDot" class="status-connected"></span>
+          <span id="statusText">Connected</span>
+        </div>
+        <p class="subtitle">Efficient patient queue management for hospitals</p>
+      </header>
+
+      <div class="main-grid">
+        <div class="control-panel">
+          <h2>Queue Management</h2>
+
+          <div class="form-group">
+            <label for="patientName">Patient Name:</label>
+            <input
+              type="text"
+              id="patientName"
+              placeholder="Enter patient name"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="patientAge">Age:</label>
+            <input
+              type="number"
+              id="patientAge"
+              min="1"
+              max="150"
+              placeholder="Enter age"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="priority">Priority Level:</label>
+            <select id="priority">
+              <option value="1">🔴 High (Critical)</option>
+              <option value="2" selected>🟠 Medium (Urgent)</option>
+              <option value="3">🟢 Low (Regular)</option>
+            </select>
+          </div>
+
+          <button id="addBtn" onclick="addPatient()">➕ Add Patient</button>
+          <button id="serveBtn" onclick="servePatient()">
+            👨‍⚕️ Serve Next Patient
+          </button>
+          <button id="sortBtn" onclick="sortQueue()">
+            🔄 Sort by Priority
+          </button>
+          <button id="exportBtn" onclick="exportData()">📤 Export Data</button>
+          <button id="clearBtn" onclick="clearQueue()">🗑️ Clear Queue</button>
+          <button id="settingsBtn" onclick="openSettings()">⚙️ Settings</button>
+          <button id="chatbotBtn" onclick="openChatbot()">💬 Help Assistant</button>
+
+          <div class="form-group">
+            <label for="queueSearch">Search Queue:</label>
+            <input
+              type="text"
+              id="queueSearch"
+              placeholder="Search patients..."
+            />
+          </div>
+        </div>
+
+        <div class="queue-display">
+          <h2>Current Queue</h2>
+          <div id="queueList"></div>
+
+          <h2>Served Patients</h2>
+          <div id="servedList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>⚙️ Settings</h2>
+          <button class="modal-close" onclick="closeSettings()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="apiUrlInput">Backend Server URL:</label>
+            <input
+              type="text"
+              id="apiUrlInput"
+              placeholder="http://192.168.x.y:5000"
+            />
+            <small>Enter the IP address of the computer running the Flask server</small>
+          </div>
+          <div class="form-group">
+            <button onclick="saveSettings()" class="btn-primary">💾 Save</button>
+            <button onclick="testConnection()" class="btn-info">🔌 Test Connection</button>
+          </div>
+          <div id="connectionStatus" style="margin-top: 10px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chatbot Modal -->
+    <div id="chatbotModal" class="modal" style="display: none;">
+      <div class="modal-content chatbot-modal">
+        <div class="modal-header">
+          <h2>💬 Help Assistant</h2>
+          <button class="modal-close" onclick="closeChatbot()">&times;</button>
+        </div>
+        <div class="chatbot-body">
+          <div id="chatbotMessages" class="chatbot-messages"></div>
+          <div id="chatbotSuggestions" class="chatbot-suggestions"></div>
+          <div class="chatbot-input-container">
+            <input
+              type="text"
+              id="chatbotInput"
+              placeholder="Ask me anything about the queue system..."
+              onkeypress="handleChatbotKeyPress(event)"
+            />
+            <button onclick="sendChatbotMessage()" class="chatbot-send-btn">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Get API base URL from config
+      function getApiBaseUrl() {
+        if (window.API_CONFIG) {
+          return window.API_CONFIG.getBaseUrl();
+        }
+        // Fallback if config.js not loaded
+        return "http://192.168.1.100:5000";
+      }
+
+      function getApiUrl(endpoint) {
+        if (window.API_CONFIG) {
+          return window.API_CONFIG.getUrl(endpoint);
+        }
+        const baseUrl = getApiBaseUrl();
+        const cleanEndpoint = endpoint.startsWith("/") ? endpoint : "/" + endpoint;
+        return baseUrl + cleanEndpoint;
+      }
+
+      const API = getApiBaseUrl(); // For backward compatibility, but use getApiUrl() for actual calls
+
+      // Load queue on page load
+      async function loadQueue() {
+        try {
+          const response = await fetch(getApiUrl("/api/queue"));
+          const data = await response.json();
+          renderQueue(data.queue || []);
+          renderServed(data.served || []);
+          updateStatus(true);
+        } catch (e) {
+          console.error("Failed to load queue:", e);
+          updateStatus(false);
+        }
+      }
+
+      // Update connection status
+      function updateStatus(connected) {
+        const dot = document.getElementById("statusDot");
+        const text = document.getElementById("statusText");
+        if (connected) {
+          dot.className = "status-connected";
+          text.textContent = "Connected";
+        } else {
+          dot.className = "status-disconnected";
+          text.textContent = "Disconnected";
+        }
+      }
+
+      // Render current queue
+      function renderQueue(queue) {
+        const queueList = document.getElementById("queueList");
+        const searchTerm = document
+          .getElementById("queueSearch")
+          .value.toLowerCase();
+
+        const filteredQueue = queue.filter((patient) =>
+          patient.name.toLowerCase().includes(searchTerm)
+        );
+
+        queueList.innerHTML =
+          filteredQueue
+            .map(
+              (patient, index) => `
+          <div class="patient-card priority-${patient.priority}">
+            <div class="patient-info">
+              <span class="patient-number">#${patient.id}</span>
+              <span class="patient-name">${patient.name}</span>
+              <span class="patient-priority">Priority: ${
+                patient.priority
+              }</span>
+            </div>
+            <div class="patient-time">Age: ${patient.age || 'N/A'}</div>
+          </div>
+        `
+            )
+            .join("") || "<p>No patients in queue</p>";
+      }
+
+      // Render served patients
+      function renderServed(served) {
+        const servedList = document.getElementById("servedList");
+        servedList.innerHTML =
+          served
+            .map(
+              (patient) => `
+          <div class="served-card">
+            <span>#${patient.id} - ${patient.name}</span>
+            <button onclick="removeServed(${patient.id})">Remove</button>
+          </div>
+        `
+            )
+            .join("") || "<p>No served patients</p>";
+      }
+
+      // Add patient
+      async function addPatient() {
+        const name = document.getElementById("patientName").value.trim();
+        const age = parseInt(document.getElementById("patientAge").value);
+        const priority = parseInt(document.getElementById("priority").value);
+
+        if (!name) {
+          showToast("❌ Please enter patient name", "error");
+          return;
+        }
+
+        if (!age || age < 1 || age > 150) {
+          showToast("❌ Please enter a valid age (1-150)", "error");
+          return;
+        }
+
+        if (!priority || priority < 1 || priority > 3) {
+          showToast("❌ Please select a valid priority (1-3)", "error");
+          return;
+        }
+
+        try {
+          const response = await fetch(getApiUrl("/api/add"), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, age, priority }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            showToast("✅ Patient added successfully");
+            document.getElementById("patientName").value = "";
+            document.getElementById("patientAge").value = "";
+            loadQueue(); // Refresh queue
+          } else {
+            showToast(`❌ ${data.error || "Failed to add patient"}`, "error");
+          }
+        } catch (e) {
+          console.error("Add patient error:", e);
+          showToast("❌ Failed to connect to server. Check settings.", "error");
+        }
+      }
+
+      // Serve patient
+      async function servePatient() {
+        try {
+          const response = await fetch(getApiUrl("/api/serve"), {
+            method: "POST",
+          });
+          const data = await response.json();
+          if (data.success) {
+            showToast("✅ Patient served successfully");
+            loadQueue(); // Refresh queue
+          } else {
+            showToast(`❌ ${data.error || "No patients in queue"}`, "error");
+          }
+        } catch (e) {
+          console.error("Serve patient error:", e);
+          showToast("❌ Failed to connect to server. Check settings.", "error");
+        }
+      }
+
+      // Sort queue
+      async function sortQueue() {
+        try {
+          const response = await fetch(getApiUrl("/api/sort"), { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            showToast("✅ Queue sorted by priority");
+            loadQueue(); // Refresh queue
+          } else {
+            showToast(`❌ ${data.error || "Failed to sort queue"}`, "error");
+          }
+        } catch (e) {
+          console.error("Sort queue error:", e);
+          showToast("❌ Failed to connect to server. Check settings.", "error");
+        }
+      }
+
+      // Export data
+      async function exportData() {
+        try {
+          const response = await fetch(getApiUrl("/api/export"));
+          const data = await response.json();
+          const blob = new Blob([JSON.stringify(data, null, 2)], {
+            type: "application/json",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `queue_${Date.now()}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+          showToast("✅ Data exported successfully");
+        } catch (e) {
+          console.error("Export error:", e);
+          showToast("❌ Failed to export data. Check settings.", "error");
+        }
+      }
+
+      // Clear queue
+      async function clearQueue() {
+        if (!confirm(`Clear all patients?`)) return;
+
+        try {
+          const response = await fetch(getApiUrl("/api/clear"), { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            showToast("✅ Queue cleared successfully");
+            loadQueue(); // Refresh queue
+          } else {
+            showToast(`❌ ${data.error || "Failed to clear queue"}`, "error");
+          }
+        } catch (e) {
+          console.error("Clear queue error:", e);
+          showToast("❌ Failed to connect to server. Check settings.", "error");
+        }
+      }
+
+      // Remove served patient
+      async function removeServed(id) {
+        if (!confirm(`Remove patient #${id} from served list?`)) return;
+
+        try {
+          const response = await fetch(getApiUrl("/api/remove_served"), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            showToast(`✅ Patient #${id} removed successfully`);
+            loadQueue(); // Refresh queue
+          } else {
+            showToast(`❌ ${data.error || "Failed to remove patient"}`, "error");
+          }
+        } catch (e) {
+          console.error("Remove served error:", e);
+          showToast("❌ Failed to connect to server. Check settings.", "error");
+        }
+      }
+
+      // Toast notifications
+      function showToast(message, type = "success") {
+        const toast = document.createElement("div");
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+
+      // Auto-refresh every 2 seconds
+      setInterval(loadQueue, 2000);
+      loadQueue();
+
+      // Add event listener for search input
+      document
+        .getElementById("queueSearch")
+        .addEventListener("input", loadQueue);
+
+      // Settings functions
+      function openSettings() {
+        const modal = document.getElementById("settingsModal");
+        const apiUrlInput = document.getElementById("apiUrlInput");
+        apiUrlInput.value = getApiBaseUrl();
+        modal.style.display = "block";
+      }
+
+      function closeSettings() {
+        const modal = document.getElementById("settingsModal");
+        modal.style.display = "none";
+      }
+
+      function saveSettings() {
+        const apiUrlInput = document.getElementById("apiUrlInput");
+        const url = apiUrlInput.value.trim();
+        
+        if (!url) {
+          showToast("❌ Please enter a valid URL", "error");
+          return;
+        }
+
+        // Basic URL validation
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+          showToast("❌ URL must start with http:// or https://", "error");
+          return;
+        }
+
+        if (window.API_CONFIG) {
+          window.API_CONFIG.setBaseUrl(url);
+          showToast("✅ Settings saved! Reloading...", "success");
+          setTimeout(() => {
+            location.reload();
+          }, 1000);
+        } else {
+          showToast("❌ Config not loaded. Please refresh the app.", "error");
+        }
+      }
+
+      async function testConnection() {
+        const apiUrlInput = document.getElementById("apiUrlInput");
+        const url = apiUrlInput.value.trim();
+        const statusDiv = document.getElementById("connectionStatus");
+        
+        if (!url) {
+          statusDiv.innerHTML = '<p style="color: red;">❌ Please enter a URL first</p>';
+          return;
+        }
+
+        statusDiv.innerHTML = '<p>🔄 Testing connection...</p>';
+
+        try {
+          const testUrl = url.endsWith("/") ? url + "api/queue" : url + "/api/queue";
+          const response = await fetch(testUrl, { method: "GET" });
+          
+          if (response.ok) {
+            statusDiv.innerHTML = '<p style="color: green;">✅ Connection successful!</p>';
+          } else {
+            statusDiv.innerHTML = `<p style="color: orange;">⚠️ Server responded with status ${response.status}</p>`;
+          }
+        } catch (e) {
+          statusDiv.innerHTML = `<p style="color: red;">❌ Connection failed: ${e.message}</p>`;
+        }
+      }
+
+      // Close modal when clicking outside
+      window.onclick = function(event) {
+        const modal = document.getElementById("settingsModal");
+        if (event.target == modal) {
+          closeSettings();
+        }
+        const chatbotModal = document.getElementById("chatbotModal");
+        if (event.target == chatbotModal) {
+          closeChatbot();
+        }
+      }
+
+      // Chatbot functionality
+      let chatbot = null;
+      
+      function initChatbot() {
+        if (window.HospitalQueueChatbot) {
+          chatbot = new HospitalQueueChatbot();
+          addChatbotMessage("bot", chatbot.getRandomResponse("greeting"));
+          showChatbotSuggestions();
+        }
+      }
+
+      function openChatbot() {
+        const modal = document.getElementById("chatbotModal");
+        if (!chatbot) {
+          initChatbot();
+        }
+        modal.style.display = "block";
+        document.getElementById("chatbotInput").focus();
+      }
+
+      function closeChatbot() {
+        const modal = document.getElementById("chatbotModal");
+        modal.style.display = "none";
+      }
+
+      function addChatbotMessage(sender, message) {
+        const messagesDiv = document.getElementById("chatbotMessages");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `chatbot-message chatbot-message-${sender}`;
+        messageDiv.textContent = message;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      }
+
+      function showChatbotSuggestions() {
+        if (!chatbot) return;
+        const suggestionsDiv = document.getElementById("chatbotSuggestions");
+        suggestionsDiv.innerHTML = "";
+        const suggestions = chatbot.getSuggestions();
+        suggestions.forEach(suggestion => {
+          const btn = document.createElement("button");
+          btn.className = "chatbot-suggestion-btn";
+          btn.textContent = suggestion;
+          btn.onclick = () => {
+            document.getElementById("chatbotInput").value = suggestion;
+            sendChatbotMessage();
+          };
+          suggestionsDiv.appendChild(btn);
+        });
+      }
+
+      function sendChatbotMessage() {
+        if (!chatbot) {
+          initChatbot();
+        }
+        const input = document.getElementById("chatbotInput");
+        const message = input.value.trim();
+        
+        if (!message) return;
+
+        addChatbotMessage("user", message);
+        input.value = "";
+
+        // Simulate thinking delay
+        setTimeout(() => {
+          const response = chatbot.getResponse(message);
+          addChatbotMessage("bot", response);
+          showChatbotSuggestions();
+        }, 300);
+      }
+
+      function handleChatbotKeyPress(event) {
+        if (event.key === "Enter") {
+          sendChatbotMessage();
+        }
+      }
+
+      // Initialize chatbot on page load
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initChatbot);
+      } else {
+        initChatbot();
+      }
+    </script>
+  </body>
+</html>
