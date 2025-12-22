@@ -1,81 +1,107 @@
+<p align="center">
+  <img src="https://animatedimages.org/data/media/381/animated-hospital-image-0048.gif" alt="Hospital Queue System">
+</p>
 
-                                                      🏥 Hospital Queue Management System 
-A full-stack application for managing hospital patient queues with priority-based sorting, real-time updates, and cross-platform support(Web + Android).
+<h1 align="center"> Hospital Queue Management System</h1>
 
-👥 Group Members
+*A full-stack application for managing hospital patient queues with priority-based sorting, real-time updates, and cross-platform support (Web + Android).*
 
-Zain ul Abideen – B24F0357CS083
+[![Python](https://img.shields.io/badge/Python-3.7+-blue?style=for-the-badge&logo=python)](https://www.python.org/)  
+[![Flask](https://img.shields.io/badge/Flask-2.0+-lightgrey?style=for-the-badge&logo=flask)](https://flask.palletsprojects.com/)  
+[![SQLite](https://img.shields.io/badge/SQLite-3.x-green?style=for-the-badge&logo=sqlite)](https://www.sqlite.org/)  
+[![Android](https://img.shields.io/badge/Android-App-green?style=for-the-badge&logo=android)](https://developer.android.com/)  
+[![Capacitor](https://img.shields.io/badge/Capacitor-Mobile-blueviolet?style=for-the-badge)](https://capacitorjs.com/)  
 
-Syed Missam Husain
+---
 
-Fazeel Ahmad Alvi
+## 👥 Group Members
 
-Proud to share the completion of our semester project, where I handled the development and implementation of the backend, web frontend, and mobile application.
+- **Zain ul Abideen – B24F0357CS083**  
+- Syed Missam Husain  
+- Fazeel Ahmad Alvi  
+
+💡 Proud to share the completion of our semester project, where I handled the **development and implementation of the backend, web frontend, and mobile app**.  
 My team members were part of the project group.
 
-📌 Project Description
+---
 
-The system efficiently manages patient queues in hospitals, prioritizing critical cases and providing synchronized updates across web and mobile platforms. Built using Flask, SQLite, and Capacitor-based mobile app.
+## 📌 Project Description
 
-🛠️ Tech Stack
+The system efficiently manages hospital patient queues, prioritizing critical cases and providing synchronized updates across web and mobile platforms. Built using **Flask**, **SQLite**, and a **Capacitor-based mobile app**.
 
-Backend: Python (Flask), SQLite
+---
 
-Frontend: HTML, CSS, JavaScript
+## 🛠️ Tech Stack
 
-Mobile: Android (Capacitor)
+- **Backend:** Python (Flask), SQLite  
+- **Frontend:** HTML, CSS, JavaScript  
+- **Mobile:** Android (Capacitor)  
+- **Algorithms:** Priority Queue, Sorting, Search  
 
-Algorithms: Priority Queue, Sorting, Search
+✨ **Workflow (flickering board style simulation)**:  
+Patient Arrival → Queue Sorting → Real-Time Updates → Served List ✔️
 
-✨ Features
+---
 
-Add, serve, and search patients
+## ✨ Features
 
-Automatic priority-based queue sorting
+- 🟢 Add, serve, and search patients  
+- 🔴 Automatic priority-based queue sorting  
+- ⏱️ Real-time updates  
+- 💾 Persistent storage via SQLite  
+- 📱 Cross-platform support (Web + Mobile)
 
-Real-time updates
+---
 
-Persistent storage via SQLite
+## 🎥 Demo
 
-Cross-platform support (Web + Mobile)
+A full demo video shows:  
 
-🎥 Demo
+- 🔹 Backend operation  
+- 🔹 Web frontend interaction  
+- 🔹 Mobile app usage  
 
-A full demo video demonstrates:
+📽️ **Demo Video Link:** [Insert Link Here]  
 
-Backend operation
+> Video serves as proof of full functionality.
 
-Web frontend interaction
+---
 
-Mobile app usage
-
-📽️ Demo Video Link: [Insert Link Here]
-
-Video serves as proof of full functionality.
-
-📁 Repository Structure
+## 📁 Repository Structure
 
 DSA-PROJ-V2/
-├── backend/        # Flask backend and C++ logic
-├── frontend/       # Web frontend files
-├── HospitalQueueMobile   # Android mobile app
-└── README.md       # Project documentation
+
+├── backend/                      # Flask backend and C++ logic
+
+├── frontend/                     # Web frontend files
+
+├── HospitalQueueMobile/            # Android mobile app
+
+└── README.md                        # Project documentation
 
 
-📄 Supervision Note
+
+---
+
+## 📄 Supervision Note
 
 This project was developed for the Data Structures and Algorithms (DSA) course under the supervision of **Lab Engineer Obaidullah Miakhil**.
 
-🎓 Learning Outcomes
+---
 
-Full-stack development
+## 🎓 Learning Outcomes
 
-Mobile and web integration
+- 🚀 Full-stack development  
+- 📲 Mobile and web integration  
+- 📊 DSA implementation in a real-world system  
+- 🔗 API design and database management  
 
-DSA implementation in a real-world system
+---
 
-API design and database management
-
-📜 License
+## 📜 License
 
 MIT License
+
+---
+
+
