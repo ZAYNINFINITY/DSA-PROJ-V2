@@ -38,8 +38,9 @@ The system efficiently manages hospital patient queues, prioritizing critical ca
 - **Mobile:** Android (Capacitor)  
 - **Algorithms:** Priority Queue, Sorting, Search  
 
-✨ **Workflow (flickering board style simulation)**:  
-Patient Arrival → Queue Sorting → Real-Time Updates → Served List ✔️
+ **Workflow:**  
+🧑‍⚕️ Patient Arrival ➡️ 📝 Queue Sorting ➡️ ⏱️ Real-Time Updates ➡️ ✅ Served List
+
 
 ---
 
