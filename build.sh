@@ -1,45 +1,28 @@
-#!/usr/bin/env bash
-set -e
+#!/bin/bash
+echo "Building Hospital Queue System for Railway deployment..."
 
-echo "======================================"
-echo "Building Hospital Queue System (Railway)"
-echo "======================================"
+# Make sure g++ is available
+if ! command -v g++ &> /dev/null; then
+    echo "Installing g++..."
+    apt-get update && apt-get install -y g++
+fi
 
-# Ensure we are in repo root
-ROOT_DIR="$(pwd)"
-echo "Working directory: $ROOT_DIR"
+# Move to backend folder
+cd backend || exit 1
 
-# Check backend directory
-if [ ! -d "backend" ]; then
-    echo "ERROR: backend directory not found!"
+# Compile C++ backend to 'ds' (Linux)
+echo "Compiling C++ backend..."
+g++ main.cpp data_structures.cpp database.cpp web.cpp -o ds -lsqlite3 -std=c++11
+if [ $? -ne 0 ]; then
+    echo "ERROR: C++ compilation failed!"
     exit 1
 fi
 
-# Ensure g++ exists (Railway usually has it)
-if ! command -v g++ >/dev/null 2>&1; then
-    echo "g++ not found. Installing..."
-    apt-get update
-    apt-get install -y g++
-fi
-
-echo "g++ version:"
-g++ --version
-
-# Compile C++ backend
-echo "Compiling C++ backend..."
-cd backend
-
-g++ main.cpp data_structures.cpp database.cpp web.cpp \
-    -o ds \
-    -std=c++11 \
-    -lsqlite3
-
+# Make executable
+chmod +x ds
 echo "C++ compilation successful!"
 
-# Ensure executable permission
-chmod +x ds
+# Return to project root
+cd ..
 
-echo "Executable created at: backend/ds"
-echo "======================================"
-echo "Build completed successfully"
-echo "======================================"
+echo "Build complete!"
