@@ -19,6 +19,7 @@ app = Flask(__name__, template_folder='../frontend/templates', static_folder='..
 CORS(app)
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Detect OS and set executable name
 if os.name == 'nt':  # Windows
     CPP_EXE_NAME = "ds.exe"
@@ -29,7 +30,6 @@ DB_FILE = os.path.join(SCRIPT_DIR, "hospital_queue.db")
 
 @contextmanager
 def get_db_connection():
-    """Context manager for database connections"""
     conn = None
     try:
         conn = sqlite3.connect(DB_FILE)
@@ -44,14 +44,13 @@ def get_db_connection():
             conn.close()
 
 def call_cpp(*args):
-    """Call the C++ executable with arguments"""
     try:
         result = subprocess.run([CPP_EXE, *args],
-                              capture_output=True,
-                              text=True,
-                              check=True,
-                              cwd=SCRIPT_DIR,
-                              timeout=10)
+                                capture_output=True,
+                                text=True,
+                                check=True,
+                                cwd=SCRIPT_DIR,
+                                timeout=10)
         return {"success": True, "output": result.stdout.strip()}
     except subprocess.TimeoutExpired:
         return {"success": False, "error": "C++ executable timed out"}
@@ -63,8 +62,8 @@ def call_cpp(*args):
     except Exception as e:
         return {"success": False, "error": str(e)}
 
+# Queue management functions
 def read_queue():
-    """Read current queue from database - sorted by priority ASC, age DESC, id ASC"""
     patients = []
     try:
         with get_db_connection() as conn:
@@ -80,7 +79,6 @@ def read_queue():
     return patients
 
 def read_served():
-    """Read served patients from database"""
     patients = []
     try:
         with get_db_connection() as conn:
@@ -95,8 +93,7 @@ def read_served():
         print(f"Error reading served from database: {e}")
     return patients
 
-
-
+# Routes
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -224,12 +221,8 @@ def remove_served():
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
-    """Chatbot endpoint - accepts user messages and returns responses"""
     if not CHATBOT_AVAILABLE:
-        return jsonify({
-            "success": False,
-            "error": "Chatbot module not available"
-        }), 503
+        return jsonify({"success": False, "error": "Chatbot module not available"}), 503
     
     if not request.is_json:
         return jsonify({"success": False, "error": "Request must be JSON"}), 400
@@ -242,10 +235,7 @@ def chat():
     
     try:
         response = get_response(message)
-        return jsonify({
-            "success": True,
-            "response": response
-        })
+        return jsonify({"success": True, "response": response})
     except Exception as e:
         print(f"Error in chatbot: {e}")
         return jsonify({
@@ -255,20 +245,17 @@ def chat():
         }), 500
 
 if __name__ == '__main__':
-    # Check for required files
     print("=" * 60)
     print("🏥 PATIENT QUEUE SYSTEM - SERVER STARTING")
     print("=" * 60)
-    
+
     # Check C++ executable
     if not os.path.exists(CPP_EXE):
         print(f"❌ ERROR: {CPP_EXE_NAME} not found at: {CPP_EXE}")
-        print(f"   Please compile the C++ backend first:")
-        print(f"   g++ main.cpp data_structures.cpp database.cpp web.cpp -o {CPP_EXE_NAME} -lsqlite3 -std=c++11")
         sys.exit(1)
     else:
         print(f"✅ Found {CPP_EXE_NAME}: {CPP_EXE}")
-    
+
     # Initialize database if it doesn't exist
     if not os.path.exists(DB_FILE):
         print(f"📊 Initializing database: {DB_FILE}")
@@ -277,21 +264,19 @@ if __name__ == '__main__':
             if not os.path.exists(schema_path):
                 print(f"❌ ERROR: init_db.sql not found at: {schema_path}")
                 sys.exit(1)
-            
+
             with get_db_connection() as conn:
                 cursor = conn.cursor()
                 with open(schema_path, 'r') as f:
-                    schema_sql = f.read()
-                cursor.executescript(schema_sql)
+                    cursor.executescript(f.read())
                 conn.commit()
-            print("✅ Database schema created")
-            print(f"✅ Database initialized: {DB_FILE}")
+            print("✅ Database initialized")
         except Exception as e:
             print(f"❌ Error initializing database: {e}")
             sys.exit(1)
     else:
         print(f"✅ Found database: {DB_FILE}")
-    
+
     # Initialize chatbot
     if CHATBOT_AVAILABLE:
         try:
@@ -299,17 +284,14 @@ if __name__ == '__main__':
             if chatbot_initialized:
                 print("✅ Chatbot initialized successfully")
             else:
-                print("⚠️  Chatbot initialization failed, but continuing...")
+                print("⚠️ Chatbot initialization failed, continuing...")
         except Exception as e:
-            print(f"⚠️  Error initializing chatbot: {e}")
+            print(f"⚠️ Error initializing chatbot: {e}")
             print("   Chat feature may not work properly")
     else:
-        print("⚠️  Chatbot module not available - chat feature disabled")
-    
+        print("⚠️ Chatbot module not available - chat feature disabled")
+
     print("=" * 60)
-    print("🌐 SERVER RUNNING AT: http://localhost:5000")
-    print("=" * 60)
-    print("📝 Press CTRL+C to stop the server")
-    print("=" * 60)
-    
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    port = int(os.environ.get("PORT", 5000))  # Railway-friendly port
+    print(f"🌐 SERVER RUNNING AT: http://0.0.0.0:{port}")
+    app.run(debug=True, host='0.0.0.0', port=port)
