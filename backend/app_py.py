@@ -19,7 +19,12 @@ app = Flask(__name__, template_folder='../frontend/templates', static_folder='..
 CORS(app)
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CPP_EXE = os.path.join(SCRIPT_DIR, "ds.exe")
+# Detect OS and set executable name
+if os.name == 'nt':  # Windows
+    CPP_EXE_NAME = "ds.exe"
+else:  # Linux/Unix
+    CPP_EXE_NAME = "ds"
+CPP_EXE = os.path.join(SCRIPT_DIR, CPP_EXE_NAME)
 DB_FILE = os.path.join(SCRIPT_DIR, "hospital_queue.db")
 
 @contextmanager
@@ -255,14 +260,14 @@ if __name__ == '__main__':
     print("🏥 PATIENT QUEUE SYSTEM - SERVER STARTING")
     print("=" * 60)
     
-    # Check ds.exe
+    # Check C++ executable
     if not os.path.exists(CPP_EXE):
-        print(f"❌ ERROR: ds.exe not found at: {CPP_EXE}")
-        print(f"   Please compile ds.cpp first:")
-        print(f"   g++ ds.cpp -o ds.exe")
+        print(f"❌ ERROR: {CPP_EXE_NAME} not found at: {CPP_EXE}")
+        print(f"   Please compile the C++ backend first:")
+        print(f"   g++ main.cpp data_structures.cpp database.cpp web.cpp -o {CPP_EXE_NAME} -lsqlite3 -std=c++11")
         sys.exit(1)
     else:
-        print(f"✅ Found ds.exe: {CPP_EXE}")
+        print(f"✅ Found {CPP_EXE_NAME}: {CPP_EXE}")
     
     # Initialize database if it doesn't exist
     if not os.path.exists(DB_FILE):
