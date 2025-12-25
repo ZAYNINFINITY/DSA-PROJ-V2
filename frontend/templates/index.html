@@ -723,7 +723,12 @@
     </div>
 
     <!-- Chat Toggle Button -->
-    <button class="chat-toggle" id="chatToggle" onclick="toggleChat()" title="Open Chat">
+    <button
+      class="chat-toggle"
+      id="chatToggle"
+      onclick="toggleChat()"
+      title="Open Chat"
+    >
       💬
     </button>
 
@@ -736,12 +741,10 @@
       <div class="chat-messages" id="chatMessages">
         <div class="chat-message bot">
           Hello! I'm your hospital queue assistant. I can help you with:
-          <br>• Queue status and patient count
-          <br>• Next patient information
-          <br>• Patient details
-          <br>• Priority system explanation
-          <br>• Hospital information
-          <br><br>How can I help you today?
+          <br />• Queue status and patient count <br />• Next patient
+          information <br />• Patient details <br />• Priority system
+          explanation <br />• Hospital information <br /><br />How can I help
+          you today?
         </div>
       </div>
       <div class="chat-input-container">
@@ -752,7 +755,12 @@
           placeholder="Type your message..."
           onkeypress="handleChatKeyPress(event)"
         />
-        <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()" title="Send">
+        <button
+          class="chat-send-btn"
+          id="chatSendBtn"
+          onclick="sendChatMessage()"
+          title="Send"
+        >
           ➤
         </button>
       </div>
@@ -1115,7 +1123,7 @@
         const toggle = document.getElementById("chatToggle");
         widget.classList.toggle("open");
         toggle.classList.toggle("hidden");
-        
+
         // Focus input when opening
         if (widget.classList.contains("open")) {
           setTimeout(() => {
