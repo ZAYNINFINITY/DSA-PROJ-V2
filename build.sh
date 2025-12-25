@@ -1,16 +1,14 @@
 #!/bin/bash
 echo "Building Hospital Queue System for Railway deployment..."
 
-# Make sure g++ is available
+# Ensure g++ is installed
 if ! command -v g++ &> /dev/null; then
     echo "Installing g++..."
     apt-get update && apt-get install -y g++
 fi
 
-# Move to backend folder
+# Compile C++ backend
 cd backend || exit 1
-
-# Compile C++ backend to 'ds' (Linux)
 echo "Compiling C++ backend..."
 g++ main.cpp data_structures.cpp database.cpp web.cpp -o ds -lsqlite3 -std=c++11
 if [ $? -ne 0 ]; then
@@ -20,7 +18,5 @@ fi
 
 # Make executable
 chmod +x ds
-echo "C++ compilation successful!"
-
 cd ..
-echo "Build complete!"
+echo "✅ Build complete!"
