@@ -3,6 +3,7 @@
 </p>
 
 <h1 align="center"> Hospital Queue Management System</h1>
+<img width="959" height="539" alt="1" src="https://github.com/user-attachments/assets/10bacbab-5e50-4009-88d3-65cb05687a0a" />
 
 *A full-stack application for managing hospital patient queues with priority-based sorting, real-time updates, and cross-platform support (Web + Android).*
 
@@ -56,6 +57,9 @@ The system efficiently manages hospital patient queues, prioritizing critical ca
 
 ## 🎥 Demo
 
+<img width="959" height="539" alt="2" src="https://github.com/user-attachments/assets/e0012947-4d47-4c7d-af96-a7969bc3a938" />
+
+<img width="959" height="539" alt="3" src="https://github.com/user-attachments/assets/f4c4ff41-0f7e-4626-9e12-f205e33a14fc" />
 
 
 https://github.com/user-attachments/assets/a6c652d2-9ac2-4641-b697-5bf7e2dd69d9
