@@ -1,3 +1,6 @@
+print(f"DEBUG: Looking for C++ executable at: {CPP_EXE}")
+print(f"Exists? {os.path.exists(CPP_EXE)}")
+
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 import subprocess
@@ -19,13 +22,14 @@ app = Flask(__name__, template_folder='../frontend/templates', static_folder='..
 CORS(app)
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+# Deployment modification: Ensured correct path to backend/ds for Linux on Railway
 # Detect OS and set executable name
 if os.name == 'nt':  # Windows
     CPP_EXE_NAME = "ds.exe"
+    CPP_EXE = os.path.join(SCRIPT_DIR, CPP_EXE_NAME)
 else:  # Linux/Unix
     CPP_EXE_NAME = "ds"
-CPP_EXE = os.path.join(SCRIPT_DIR, CPP_EXE_NAME)
-DB_FILE = os.path.join(SCRIPT_DIR, "hospital_queue.db")
+    CPP_EXE = os.path.join(SCRIPT_DIR, "backend", CPP_EXE_NAME)  # << must match build.sh
 
 @contextmanager
 def get_db_connection():
