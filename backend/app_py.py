@@ -23,10 +23,13 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 # Detect OS and set executable name
 if os.name == 'nt':  # Windows
     CPP_EXE_NAME = "ds.exe"
+    CPP_EXE = os.path.join(SCRIPT_DIR, CPP_EXE_NAME)
 else:  # Linux/Unix
     CPP_EXE_NAME = "ds"
-CPP_EXE = os.path.join(SCRIPT_DIR, CPP_EXE_NAME)
+    CPP_EXE = os.path.join(SCRIPT_DIR, "backend", CPP_EXE_NAME)  # Correct Linux path
+
 DB_FILE = os.path.join(SCRIPT_DIR, "hospital_queue.db")
+
 
 @contextmanager
 def get_db_connection():
@@ -42,6 +45,7 @@ def get_db_connection():
     finally:
         if conn:
             conn.close()
+
 
 def call_cpp(*args):
     try:
@@ -62,6 +66,7 @@ def call_cpp(*args):
     except Exception as e:
         return {"success": False, "error": str(e)}
 
+
 # Queue management functions
 def read_queue():
     patients = []
@@ -78,6 +83,7 @@ def read_queue():
         print(f"Error reading queue from database: {e}")
     return patients
 
+
 def read_served():
     patients = []
     try:
@@ -93,30 +99,33 @@ def read_served():
         print(f"Error reading served from database: {e}")
     return patients
 
+
 # Routes
 @app.route('/')
 def index():
     return render_template('index.html')
 
+
 @app.route('/api/queue', methods=['GET'])
 def get_queue():
     return jsonify({"queue": read_queue(), "served": read_served()})
+
 
 @app.route('/api/add', methods=['POST'])
 def add_patient():
     if not request.is_json:
         return jsonify({"success": False, "error": "Request must be JSON"}), 400
-    
+
     data = request.json or {}
     name = data.get('name', '').strip()
     age = data.get('age')
     priority = data.get('priority')
-    
+
     if not name:
         return jsonify({"success": False, "error": "Name is required"}), 400
     if not age or not priority:
         return jsonify({"success": False, "error": "Age and priority are required"}), 400
-    
+
     try:
         age = int(age)
         priority = int(priority)
@@ -126,12 +135,13 @@ def add_patient():
             return jsonify({"success": False, "error": "Priority must be 1, 2, or 3"}), 400
     except (ValueError, TypeError):
         return jsonify({"success": False, "error": "Age and priority must be valid numbers"}), 400
-    
+
     result = call_cpp('add', name, str(age), str(priority))
     if result["success"]:
         return jsonify({**result, "queue": read_queue()})
     else:
         return jsonify(result), 500
+
 
 @app.route('/api/serve', methods=['POST'])
 def serve_patient():
@@ -141,6 +151,7 @@ def serve_patient():
     else:
         return jsonify(result), 500
 
+
 @app.route('/api/sort', methods=['POST'])
 def sort_queue():
     result = call_cpp('sort')
@@ -149,6 +160,7 @@ def sort_queue():
     else:
         return jsonify(result), 500
 
+
 @app.route('/api/clear', methods=['POST'])
 def clear_queue():
     result = call_cpp('clear')
@@ -156,6 +168,7 @@ def clear_queue():
         return jsonify({**result, "queue": read_queue(), "served": read_served()})
     else:
         return jsonify(result), 500
+
 
 @app.route('/api/export', methods=['GET'])
 def export_data():
@@ -167,7 +180,7 @@ def export_data():
                 "FROM patients ORDER BY created_at ASC"
             )
             rows = cursor.fetchall()
-            
+
             patients_data = [{
                 "id": row[0],
                 "name": row[1],
@@ -192,22 +205,24 @@ def export_data():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
+
 @app.route('/api/display', methods=['GET'])
 def display_queue():
     result = call_cpp('display')
     return jsonify(result)
 
+
 @app.route('/api/remove_served', methods=['POST'])
 def remove_served():
     if not request.is_json:
         return jsonify({"success": False, "error": "Request must be JSON"}), 400
-    
+
     data = request.json or {}
     patient_id = data.get('id')
 
     if not patient_id:
         return jsonify({"success": False, "error": "Missing patient ID"}), 400
-    
+
     try:
         patient_id = int(patient_id)
     except (ValueError, TypeError):
@@ -219,20 +234,21 @@ def remove_served():
     else:
         return jsonify(result), 500
 
+
 @app.route('/api/chat', methods=['POST'])
 def chat():
     if not CHATBOT_AVAILABLE:
         return jsonify({"success": False, "error": "Chatbot module not available"}), 503
-    
+
     if not request.is_json:
         return jsonify({"success": False, "error": "Request must be JSON"}), 400
-    
+
     data = request.json or {}
     message = data.get('message', '').strip()
-    
+
     if not message:
         return jsonify({"success": False, "error": "Message is required"}), 400
-    
+
     try:
         response = get_response(message)
         return jsonify({"success": True, "response": response})
@@ -243,6 +259,7 @@ def chat():
             "error": "An error occurred while processing your message",
             "response": "I'm sorry, I encountered an error. Please try again."
         }), 500
+
 
 if __name__ == '__main__':
     print("=" * 60)
@@ -260,7 +277,7 @@ if __name__ == '__main__':
     if not os.path.exists(DB_FILE):
         print(f"📊 Initializing database: {DB_FILE}")
         try:
-            schema_path = os.path.join(SCRIPT_DIR, "init_db.sql")
+            schema_path = os.path.join(SCRIPT_DIR, "backend", "init_db.sql")  # Correct path
             if not os.path.exists(schema_path):
                 print(f"❌ ERROR: init_db.sql not found at: {schema_path}")
                 sys.exit(1)
