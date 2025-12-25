@@ -17,8 +17,8 @@
 ## 👥 Group Members
 
 - **Zain ul Abideen – B24F0357CS083**  
-- Syed Missam Husain  
-- Fazeel Ahmad Alvi  
+- **Syed Missam Husain – B24F1000CS237**
+- **Fazeel Ahmad Alvi  – B24F1139CS095**
 
 💡 Proud to share the completion of our semester project, where I handled the **development and implementation of the backend, web frontend, and mobile app**.  
 My team members were part of the project group.
