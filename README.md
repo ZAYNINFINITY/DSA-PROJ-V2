@@ -56,13 +56,10 @@ The system efficiently manages hospital patient queues, prioritizing critical ca
 
 ## 🎥 Demo
 
-A full demo video shows:  
 
-- 🔹 Backend operation  
-- 🔹 Web frontend interaction  
-- 🔹 Mobile app usage  
 
-📽️ **Demo Video Link:** [Insert Link Here]  
+https://github.com/user-attachments/assets/a6c652d2-9ac2-4641-b697-5bf7e2dd69d9
+
 
 > Video serves as proof of full functionality.
 
