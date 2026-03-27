@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <cstdlib>
+#include <stdexcept>
 #include "data_structures.h"
 #include "database.h"
 #include "web.h"
@@ -13,10 +15,18 @@ int main(int argc, char* argv[]) {
     Queue q;
 
     // Load existing queued patients from database into queue
-    vector<Patient> queued = db.getQueuedPatients();
-    for (size_t i = 0; i < queued.size(); ++i) {
-        Patient p = queued[i];
-        q.loadPatient(p.id, p.name, p.age, p.priority);
+    try {
+        vector<Patient> queued = db.getQueuedPatients();
+        for (size_t i = 0; i < queued.size(); ++i) {
+            const Patient& p = queued[i];
+            q.loadPatient(p.id, p.name, p.age, p.priority);
+        }
+    } catch (const exception& e) {
+        cerr << "Error loading patients from database: " << e.what() << endl;
+        return 1;
+    } catch (...) {
+        cerr << "Unknown error loading patients from database" << endl;
+        return 1;
     }
 
     // Handle commands

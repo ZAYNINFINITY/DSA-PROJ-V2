@@ -1,0 +1,8 @@
+{
+  "appId": "com.qmanager",
+  "appName": "Qmanager",
+  "webDir": "frontend/public",
+  "server": {
+    "androidScheme": "http"
+  }
+}
