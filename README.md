@@ -13,18 +13,7 @@
 [![Android](https://img.shields.io/badge/Android-App-green?style=for-the-badge&logo=android)](https://developer.android.com/)  
 [![Capacitor](https://img.shields.io/badge/Capacitor-Mobile-blueviolet?style=for-the-badge)](https://capacitorjs.com/)  
 
----
 
-## 👥 Group Members
-
-- **Zain ul Abideen – B24F0357CS083**  
-- **Syed Missam Husain – B24F1000CS237**
-- **Fazeel Ahmad Alvi  – B24F1139CS095**
-
-💡 Proud to share the completion of our semester project, where I handled the **development and implementation of the backend, web frontend, and mobile app**.  
-My team members were part of the project group.
-
----
 
 ## 📌 Project Description
 
@@ -83,13 +72,7 @@ DSA-PROJ-V2/
 
 
 
----
 
-## 📄 Supervision Note
-
-This project was developed for the Data Structures and Algorithms (DSA) course under the supervision of **Lab Engineer Obaidullah Miakhil**.
-
----
 
 ## 🎓 Learning Outcomes
 
